@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "HealthComponent.h"
+#include "StatComponent.h"
+#include "PlayerHUD.h"
+#include "InputActionValue.h"
 #include "HeroCharacter.generated.h"
-
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnCollectibleCountChanged, int32, NewCount);
 
 UCLASS()
 class PRC_API AHeroCharacter : public ACharacter
@@ -29,7 +31,6 @@ public:
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputMappingContext> DefaultMappingContext;
-
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> MoveAction;
 	UPROPERTY(EditAnywhere, Category = "Input")
@@ -38,12 +39,23 @@ public:
 	TObjectPtr<class UInputAction> JumpAction;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> DodgeAction;
+	UPROPERTY(EditDefaultsOnly, Category ="HUD")
+	TSubclassOf<UPlayerHUD> HUDWidgetClass;
+	UPROPERTY()
+	TObjectPtr<UPlayerHUD> HUDInstance;
+	UPROPERTY(EditDefaultsOnly, Category="Input")
+	TObjectPtr<UInputAction> IA_TestDamage;
 
+	void OnTestDamage(const FInputActionValue& Value);
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class USpringArmComponent> CameraBoom;
 
 	UPROPERTY(EditAnywhere, Category = "Camera")
 	TObjectPtr<class UCameraComponent> FollowCamera;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UHealthComponent> HealthComp;
+	UPROPERTY(VisibleAnywhere,BlueprintReadOnly)
+	TObjectPtr<UStatComponent> StatComp;
 
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputMappingContext> KeyboardOnlyMappingContext;
@@ -70,8 +82,6 @@ public:
 
 	bool bIsInvincible = false;
 
-	UPROPERTY(BlueprintAssignable, Category = "Collectibles")
-	FOnCollectibleCountChanged OnCollectibleCountChanged;
 
 	UFUNCTION(BlueprintCallable, Category = "Collectibles")
 	void AddCollectible();

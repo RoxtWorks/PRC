@@ -28,6 +28,9 @@ AHeroCharacter::AHeroCharacter()
     GetCharacterMovement()->bOrientRotationToMovement = true;
     GetCharacterMovement()->RotationRate = FRotator(0.f, 500.f, 0.f);
 
+    HealthComp = CreateDefaultSubobject<UHealthComponent>(TEXT("Health"));
+    StatComp = CreateDefaultSubobject<UStatComponent>(TEXT("StatComp"));
+
 }
 
 // Called when the game starts or when spawned
@@ -42,7 +45,24 @@ void AHeroCharacter::BeginPlay()
             Subsystem->AddMappingContext(DefaultMappingContext, 0);
         }
     }
+    if (StatComp && GetCharacterMovement())
+    {
+        GetCharacterMovement()->MaxWalkSpeed *= StatComp->MoveSpeedMultiplier;
+    }
 
+    if (IsLocallyControlled() && HUDWidgetClass)
+    {
+        UE_LOG(LogTemp, Warning, TEXT("HUD: creating widget"));
+        APlayerController* PC = Cast<APlayerController>(GetController());
+        HUDInstance = CreateWidget<UPlayerHUD>(PC, HUDWidgetClass);
+        if (HUDInstance) HUDInstance->AddToViewport();
+        else UE_LOG(LogTemp, Warning, TEXT("HUD: CreateWidget returned null"));
+    }
+    else
+    {
+        UE_LOG(LogTemp, Warning, TEXT("HUD: skipped — LocallyControlled=%d WidgetClass=%d"),
+            IsLocallyControlled(), HUDWidgetClass != nullptr);
+    }
 }
 
 // Called every frame
@@ -62,6 +82,7 @@ void AHeroCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompo
         EIC->BindAction(LookAction, ETriggerEvent::Triggered, this, &AHeroCharacter::Look);
         EIC->BindAction(JumpAction, ETriggerEvent::Triggered, this, &ACharacter::Jump);
         EIC->BindAction(JumpAction, ETriggerEvent::Completed, this, &ACharacter::StopJumping);
+        EIC->BindAction(IA_TestDamage, ETriggerEvent::Started, this, &AHeroCharacter::OnTestDamage);
         //EIC->BindAction(DodgeAction, ETriggerEvent::Started, this, &AHeroCharacter::Dodge);
     }
 }
@@ -131,7 +152,10 @@ void AHeroCharacter::Jump()
 void AHeroCharacter::AddCollectible()
 {
     CollectibleCount++;
-    OnCollectibleCountChanged.Broadcast(CollectibleCount);
 }
 
+void AHeroCharacter::OnTestDamage(const FInputActionValue& Value)
+{
+    if (HealthComp) HealthComp->TakeDamage(25.f);
+}
 
