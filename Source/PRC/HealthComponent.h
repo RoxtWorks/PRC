@@ -27,7 +27,9 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnHealthChanged OnHealthChanged;
 
+	UFUNCTION(BlueprintCallable)
 	void TakeDamage(float Amount);
+	UFUNCTION(BlueprintCallable)
 	void Heal(float Amount);
 
 protected:

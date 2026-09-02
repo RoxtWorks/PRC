@@ -8,6 +8,7 @@
 #include "StatComponent.h"
 #include "PlayerHUD.h"
 #include "InputActionValue.h"
+#include "InputAction.h"
 #include "HeroCharacter.generated.h"
 
 UCLASS()
@@ -39,6 +40,8 @@ public:
 	TObjectPtr<class UInputAction> JumpAction;
 	UPROPERTY(EditAnywhere, Category = "Input")
 	TObjectPtr<class UInputAction> DodgeAction;
+	UPROPERTY(EditAnywhere,Category=  "Input")
+	TObjectPtr<UInputAction> IA_Attack;
 	UPROPERTY(EditDefaultsOnly, Category ="HUD")
 	TSubclassOf<UPlayerHUD> HUDWidgetClass;
 	UPROPERTY()
