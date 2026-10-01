@@ -36,6 +36,9 @@ protected:
     UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
     TObjectPtr<UInputAction> IA_Jump;
 
+    UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Input")
+    TObjectPtr<UInputAction> IA_Attack;
+
 private:
     void Move(const struct FInputActionValue& Value);
     void Look(const struct FInputActionValue& Value);
