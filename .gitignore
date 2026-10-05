@@ -75,3 +75,6 @@ DerivedDataCache/*
 
 # Local editor-automation plugin (not part of the course project)
 Plugins/MCPUnreal/
+
+# Local editor-automation plugin (not part of the course project)
+Plugins/Monolith/
